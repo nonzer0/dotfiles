@@ -1,0 +1,1 @@
+/Users/nwest/icloud-drive/dotfiles/nvim/init.lua
