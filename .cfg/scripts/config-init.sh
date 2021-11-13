@@ -1,5 +1,5 @@
 git clone --bare git@github.com:nonzer0/dotfiles.git
-$HOME/.dotfiles
+$HOME/.cfg
 
 # define config alias locally since the dotfiles
 # aren't installed on the system yet
