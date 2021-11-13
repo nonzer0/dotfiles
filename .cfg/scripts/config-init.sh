@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 git clone --bare git@github.com:nonzer0/dotfiles.git
 $HOME/.dotfiles
 
