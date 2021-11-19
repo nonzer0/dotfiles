@@ -51,7 +51,11 @@ require('packer').startup(function()
   use 'nvim-treesitter/nvim-treesitter-textobjects'
   use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
   use 'kabouzeid/nvim-lspinstall' -- convenient installation of lang servers
-  use 'hrsh7th/nvim-compe' -- Autocompletion plugin
+  use 'hrsh7th/cmp-nvim-lsp'
+  use 'hrsh7th/cmp-buffer'
+  use 'hrsh7th/cmp-path'
+  use 'hrsh7th/cmp-cmdline'
+  use 'hrsh7th/nvim-cmp' -- completion
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
   use 'kyazdani42/nvim-web-devicons' --devicons
   use 'jiangmiao/auto-pairs' --insert brackets, parens, quotes in pairs
@@ -65,8 +69,11 @@ require('packer').startup(function()
   use 'mhartington/formatter.nvim'
   use 'preservim/nerdcommenter'
   use 'jose-elias-alvarez/nvim-lsp-ts-utils'
+  use 'onsails/lspkind-nvim' --vscode-like pictograms
 
 end)
+
+require('options')
 
 --Incremental live completion
 vim.o.inccommand = 'nosplit'
@@ -75,7 +82,7 @@ vim.o.inccommand = 'nosplit'
 vim.o.hlsearch = true
 
 --Make line numbers default
-vim.wo.number = true
+-- vim.wo.number = true
 
 --Do not save when switching buffers
 vim.o.hidden = true
@@ -580,63 +587,7 @@ require('nvim-treesitter.configs').setup {
   },
 }
 
--- Set completeopt to have a better completion experience
-vim.o.completeopt = 'menuone,noinsert'
-
--- Compe setup
-require('compe').setup {
-  source = {
-    path = true,
-    nvim_lsp = true,
-    luasnip = true,
-    buffer = false,
-    calc = false,
-    nvim_lua = false,
-    vsnip = false,
-    ultisnips = false,
-  },
-}
-
--- Utility functions for compe and luasnip
-local t = function(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
-local check_back_space = function()
-  local col = vim.fn.col '.' - 1
-  if col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' then
-    return true
-  else
-    return false
-  end
-end
-
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
-local luasnip = require 'luasnip'
-
-_G.tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t '<C-n>'
-  elseif luasnip.expand_or_jumpable() then
-    return t '<Plug>luasnip-expand-or-jump'
-  elseif check_back_space() then
-    return t '<Tab>'
-  else
-    return vim.fn['compe#complete']()
-  end
-end
-
-_G.s_tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t '<C-p>'
-  elseif luasnip.jumpable(-1) then
-    return t '<Plug>luasnip-jump-prev'
-  else
-    return t '<S-Tab>'
-  end
-end
+require('comp') --cmp config file
 
 -- Map tab to the above tab complete functiones
 vim.api.nvim_set_keymap('i', '<Tab>', 'v:lua.tab_complete()', { expr = true })
@@ -644,10 +595,6 @@ vim.api.nvim_set_keymap('s', '<Tab>', 'v:lua.tab_complete()', { expr = true })
 vim.api.nvim_set_keymap('i', '<S-Tab>', 'v:lua.s_tab_complete()', { expr = true })
 vim.api.nvim_set_keymap('s', '<S-Tab>', 'v:lua.s_tab_complete()', { expr = true })
 
--- Map compe confirm and complete functions
-vim.api.nvim_set_keymap('i', '<cr>', 'compe#confirm("<cr>")', { expr = true })
-vim.api.nvim_set_keymap('i', '<c-space>', 'compe#complete()', { expr = true })
- 
 require'nvim-web-devicons'.setup {
  -- your personnal icons can go here (to override)
  -- DevIcon will be appended to `name`
