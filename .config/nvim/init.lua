@@ -108,10 +108,10 @@ vim.wo.signcolumn = 'yes'
 vim.o.termguicolors = true
 -- vim.g.onedark_terminal_italics = 2
 
--- vim.g.tokyonight_style = "storm"
--- vim.cmd [[colorscheme tokyonight]]
+vim.g.tokyonight_style = "storm"
+vim.cmd [[colorscheme tokyonight]]
 
-vim.cmd [[colorscheme kat.nvim-owo]]
+-- vim.cmd [[colorscheme kat.nvim-owo]]
 
 -- Load the colorscheme
 -- require('tokyonight').set()
