@@ -1,5 +1,4 @@
--- Install packer
-local execute = vim.api.nvim_command
+-- Install packer local execute = vim.api.nvim_command
 local fn = vim.fn
 
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
@@ -70,6 +69,8 @@ require('packer').startup(function()
   use 'preservim/nerdcommenter'
   use 'jose-elias-alvarez/nvim-lsp-ts-utils'
   use 'onsails/lspkind-nvim' --vscode-like pictograms
+  use {'sbdchd/neoformat', cmd = { 'Neoformat' } }
+  use 'sgur/vim-editorconfig' --use editorconfig for formatting
 
 end)
 
@@ -117,9 +118,9 @@ vim.cmd [[colorscheme tokyonight]]
 -- require('tokyonight').set()
 
 -- indentation
-vim.cmd('filetype plugin indent on')
-vim.o.softtabstop = 2
-vim.o.shiftwidth = 2
+-- vim.cmd('filetype plugin indent on')
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
 vim.o.expandtab = true
 
 -- local b = vim.bo        -- buffer-scoped options
@@ -129,7 +130,7 @@ vim.o.autoindent = true
 -- prettier
 vim.g['zoom#statustext'] = 'Z'
 vim.g['prettier#autoformat_config_present'] = 1
-vim.g['prettier#autoformat_config_files'] = {'.prettierrc.json'}
+vim.g['prettier#autoformat_config_files'] = {'.prettierrc'}
 
 --Set statusbar
 vim.g.lightline = {
@@ -183,6 +184,18 @@ require('telescope').setup {
     },
   },
 }
+
+function show_line_diagnostics()
+  local opts = {
+    focusable = false,
+    close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+    border = 'rounded',
+    source = 'always',  -- show source in diagnostic popup window
+    prefix = ' '
+  }
+  vim.diagnostic.open_float(nil, opts)
+end
+
 --Add leader shortcuts
 map('n', ',', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
 --map('n', ',,', [[<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown({}))<CR>]], { noremap = true, silent = true })
@@ -232,13 +245,14 @@ local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'v', '<leader>ca', '<cmd>lua vim.lsp.buf.range_code_action()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.diagnostic.open_float(nil, { source = "always" })<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.diagnostic.set_loclist()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
   vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+
 
   require'completion'.on_attach(client)
   require'diagnostic'.on_attach(client)
@@ -481,10 +495,10 @@ nvim_lsp.tsserver.setup {
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'v', '<leader>ca', '<cmd>lua vim.lsp.buf.range_code_action()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.diagnostic.open_float(nil, { source = "always" })<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.diagnostic.set_loclist()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
         vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
